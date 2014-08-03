@@ -1,0 +1,13 @@
+add_group_ou.sh ou=inbodem,ou=groups,dc=milieuinfo,dc=be
+dn: ou=inbodem,ou=groups,dc=milieuinfo,dc=be
+objectClass: groupOfUniqueNames
+objectClass: organizationalunit
+objectClass: top
+ou: inbodem
+
+add_group_rol.sh cn=inbodem_editor,ou=inbodem,ou=groups,dc=milieuinfo,dc=be
+dn: cn=inbodem_editor,ou=inbodem,ou=groups,dc=milieuinfo,dc=be
+objectClass: groupOfUniqueNames
+objectClass: rol
+objectClass: top
+cn: inbodem_editor

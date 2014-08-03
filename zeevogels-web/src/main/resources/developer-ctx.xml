@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       ">
+
+    <bean id="authenticationExtractor" class="be.milieuinfo.spring.security.openam.remoting.common.TrustingAuthenticationExtractor">
+        <property name="username" value="systeemgebruiker"/>
+    </bean>
+
+    <bean id="securedInvokerRequestExecutor" class="be.milieuinfo.spring.security.openam.remoting.httpinvoker.TrustingHttpInvokerRequestExecutor">
+        <property name="authenticationExtractor" ref="authenticationExtractor"/>
+    </bean>
+
+    <bean id="securedSoapOutInterceptor" class="be.milieuinfo.spring.security.openam.remoting.soap.TrustingSoapOutInterceptor">
+        <property name="authenticationExtractor" ref="authenticationExtractor"/>
+    </bean>
+
+    <bean id="openamAuthenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+        <property name="userDetailsService" ref="userDetailsService"/>
+    </bean>
+
+    <bean id="openamProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/login.jsp"/>
+    </bean>
+
+    <bean id="openamStatelessAuthenticationFilter" class="be.milieuinfo.spring.security.trust.authentication.TrustingStatelessAuthenticationFilter">
+        <property name="userDetailsService" ref="userDetailsService"/>
+    </bean>
+
+	<bean id="openamLogoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+	    <constructor-arg index="0" value="/welcome.jsp" />
+	    <constructor-arg index="1">
+	        <list>
+	            <bean id="securityContextLogoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
+	        </list>
+	    </constructor-arg>
+	    <property name="filterProcessesUrl" value="/j_spring_openam_logout" />
+	</bean>
+
+    <bean id="userDetailsService" class="be.milieuinfo.spring.security.openam.common.InMemoryUserDetailsService">
+       <property name="userMap">
+            <map>
+             	<entry key="admin">
+                    <map>
+                        <entry key="password" value="admin" />
+                        <entry key="roles" value="zeevogels_editor" />
+                        <entry key="attributes" value="sn=all,givenName=reader,mail=reader@inbo.be" />
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

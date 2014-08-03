@@ -1,0 +1,29 @@
+<configuration>
+
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Application code related loggers -->
+	<logger name="be.inbo.zeevogels" level="debug">
+		<appender-ref ref="console" />
+	</logger>
+	<!-- Spring code related loggers -->
+	<logger name="org.springframework" level="off" >
+		<appender-ref ref="console" />
+	</logger>
+
+	<!-- Hibernate code related loggers -->
+	<logger name="org.hibernate" level="off">
+		<appender-ref ref="console" />
+	</logger>
+	
+	<!-- 
+	<logger name="be.milieuinfo.core.proxy.controller.ProxyController" level="trace">
+		<appender-ref ref="console" />
+	</logger>
+	-->
+
+</configuration>

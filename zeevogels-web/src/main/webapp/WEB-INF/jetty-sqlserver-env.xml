@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<Configure class="org.mortbay.jetty.webapp.WebAppContext">
+	<New id="zeevogelsdb" class="org.mortbay.jetty.plus.naming.Resource">
+		<Arg>jdbc/zeevogelsDB</Arg>
+		<Arg>
+			<New class="org.apache.commons.dbcp.BasicDataSource">
+				<Set name="driverClassName">net.sourceforge.jtds.jdbc.Driver</Set>
+				<Set name="url">jdbc:jtds:sqlserver://localhost:1433/Bodem</Set>
+				<Set name="username">inbodemwsbusiness</Set>
+				<Set name="password">Development@03</Set>
+			</New>
+		</Arg>
+	</New>
+	<New class="org.mortbay.jetty.plus.naming.EnvEntry">
+        <Arg>machineName</Arg>
+        <Arg type="java.lang.String">localhost</Arg>
+    </New>
+    <New class="org.mortbay.jetty.plus.naming.EnvEntry">
+        <Arg>environment</Arg>
+        <Arg type="java.lang.String">ontwikkel</Arg>
+    </New>
+</Configure>

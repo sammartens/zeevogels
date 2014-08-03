@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/jee 
+	    http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+	    http://www.springframework.org/schema/jdbc 
+		http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+	   		http://www.springframework.org/schema/context
+	   		http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <context:component-scan base-package="be.inbo.zeevogels.dao.impl" />
+    
+	<bean id="zeevogelsTransactionmanager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="zeevogelsSessionFactory" />
+	</bean>
+	
+	<tx:advice id="txZeevogelsAdvice" transaction-manager="zeevogelsTransactionmanager"/>
+	<aop:config>
+    	<aop:pointcut id="zeevogelsServiceOperation" expression="execution(* be.inbo.zeevogels.service.impl.*ServiceImpl*.*(..))"/>
+        <aop:advisor advice-ref="txZeevogelsAdvice" pointcut-ref="zeevogelsServiceOperation"/>
+  	</aop:config>
+
+    <tx:annotation-driven transaction-manager="zeevogelsTransactionmanager" />
+
+	<bean id="zeevogelsSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="zeevogelsDataSource" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${sqlDialect}</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+				<prop key="hibernate.show_sql">${showSql}</prop>
+				<prop key="hibernate.format_sql">${showSql}</prop>
+			</props>
+		</property>
+		<property name="packagesToScan" value="be.inbo.zeevogels.domain"/>
+	</bean>
+	
+	<!-- 		DATASOURCE 			-->
+	
+	<jee:jndi-lookup id="zeevogelsDataSource" jndi-name="java:comp/env/jdbc/zeevogelsDB" />
+</beans>
