@@ -27,6 +27,7 @@ public class TripDAOTest extends AbstractTransactionalJUnit4SpringContextTests {
 		List<Trip> result = tripDAO.findFiltered(0, 10, filters, new SortCriterium("survey", "ASC"));
 		assertEquals(1, result.size());
 		assertEquals("Mijn eerste survey", result.get(0).getSurvey());
+		assertEquals("De marie-louise", result.get(0).getShip().getName());
 	}
 
 	@Test
