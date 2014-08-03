@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+    <parent>
+		<artifactId>zeevogels</artifactId>
+		<groupId>be.inbo.zeevogels</groupId>
+		<version>0.0.1-SNAPSHOT </version>
+	</parent>
+	<groupId>be.inbo.zeevogels</groupId>
+	<artifactId>zeevogels-assembly</artifactId>
+	<version>0.0.1-SNAPSHOT </version>
+	<name>zeevogels assembly Module</name>
+	
+    <dependencies>
+        <dependency>
+            <groupId>be.inbo.zeevogels</groupId>
+            <artifactId>zeevogels-web</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+			<groupId>net.sourceforge.jtds</groupId>
+            <artifactId>jtds</artifactId>
+            <version>1.2.4</version>
+            <type>jar</type>
+            <scope>compile</scope>
+		</dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
+                    <descriptors>
+                        <descriptor>src/assembly/assembly-application-web.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>true</appendAssemblyId>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

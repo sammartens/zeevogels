@@ -1,0 +1,13 @@
+<Context path="/bobo" docBase="/opt/tomcat/apps/bobo-web-${project.version}.war" debug="0" useHttpOnly="true">
+
+	<Resource name="jdbc/ZeevogelsDB" 
+		auth="Container" 
+		type="javax.sql.DataSource" 
+		maxActive="100" 
+		maxIdle="30" 
+		maxWait="10000" 
+		username="%db_username%" 
+		password="%db_password%" 
+		driverClassName="net.sourceforge.jtds.jdbc.Driver" 
+		url="jdbc:jtds:sqlserver://%INBO_DB_MACHINE%-%zuil%-%vlan%:%INBO_DB_PORT%/%zeevogels_db_schema%;appName=%zeevogels_db_appname%"/>
+</Context>

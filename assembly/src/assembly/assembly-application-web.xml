@@ -1,0 +1,55 @@
+<assembly>
+    <baseDirectory>${artifactId}-${version}</baseDirectory>
+    <id>application-web</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>apps</outputDirectory>
+            <includes>
+                <include>be.inbo.zeevogels:zeevogels-web</include>
+            </includes>
+            <unpack>false</unpack>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>apps/lib</outputDirectory>
+            <includes>
+                <include>net.sourceforge.jtds:jtds</include>
+            </includes>
+            <unpack>false</unpack>
+        </dependencySet>
+    </dependencySets>
+
+    <files>
+        <file>
+            <source>${basedir}/src/main/resources/context.xml</source>
+            <outputDirectory>apps</outputDirectory>
+            <fileMode>0755</fileMode>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>${basedir}/src/main/resources/cleanup.sh</source>
+            <outputDirectory>apps</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+         <file>
+            <source>${basedir}/src/main/resources/setenv.sh</source>
+            <outputDirectory>apps</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+		<file>
+            <source>${basedir}/src/main/resources/postinstall.sh</source>
+            <outputDirectory>apps</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+        <file>
+            <source>${basedir}/src/main/resources/application.properties</source>
+            <outputDirectory>apps</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+    </files>
+
+</assembly>
