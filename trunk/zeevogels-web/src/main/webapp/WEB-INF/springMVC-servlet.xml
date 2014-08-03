@@ -1,0 +1,34 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+ 	<mvc:annotation-driven />
+ 	
+ 	<mvc:view-controller path="/" view-name="home"/>
+ 	<mvc:view-controller path="/home" view-name="home"/>
+ 	<!-- mvc:view-controller path="/login" view-name="login"/-->
+ 	<mvc:resources mapping="/zeevogels/**" location="/zeevogels/"/>
+ 	<mvc:resources mapping="/ext-4.2.1/**" location="/ext-4.2.1/"/>
+ 	<mvc:resources mapping="/lib/**" location="/lib/"/>
+ 	<mvc:resources mapping="/resources/**" location="/resources/"/>
+ 	<mvc:resources mapping="/OpenLayers-2.12/**" location="/OpenLayers-2.12/"/>
+ 	
+ 	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	  <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+	  <property name="prefix" value="/WEB-INF/pages/"/>
+	  <property name="suffix" value=".jsp"/>
+	</bean>
+
+	<context:component-scan base-package="be.inbo.zeevogels.controller"></context:component-scan>
+	<!-- AOP -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />	
+	
+</beans>

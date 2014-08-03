@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+       ">
+       
+     <bean id="environment" class="be.milieuinfo.infra.spring.FailoverJndiObjectFactoryBean">
+         <property name="jndiName" value="environment"/>
+         <property name="expectedType" value="java.lang.String"/>
+         <property name="lookupOnStartup" value="true"/>
+    </bean>
+
+    <bean id="machineName" class="be.milieuinfo.infra.spring.FailoverJndiObjectFactoryBean">
+         <property name="jndiName" value="machineName"/>
+         <property name="expectedType" value="java.lang.String"/>
+         <property name="lookupOnStartup" value="true"/>
+    </bean>
+
+    <bean id="environmentDependentPropertyPlaceHolderConfigurer" class="be.milieuinfo.infra.spring.EnvironmentDependentPropertyPlaceholderConfigurer">
+        <property name="machineName" ref="machineName"/>
+        <property name="environment" ref="environment"/>
+        <property name="locations">
+            <list>
+                <value>classpath:/application.properties</value>
+            </list>
+        </property>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="ignoreResourceNotFound" value="false"/>
+    </bean>
+    
+    <bean id="ajaxTimeoutRedirectFilter" class="be.milieuinfo.core.web.security.AjaxTimeoutFilter">
+    	<property name="customSessionExpiredErrorCode" value="401"/>
+	</bean>
+    
+    <sec:http entry-point-ref="openamProcessingFilterEntryPoint" use-expressions="true">
+        <sec:intercept-url pattern=".*" access="permitAll" />
+        <sec:custom-filter ref="openamLogoutFilter" before="CAS_FILTER" />
+        <sec:custom-filter ref="usernamePasswordAuthenticationFilter" position="FORM_LOGIN_FILTER" />
+        <sec:custom-filter ref="openamAuthenticationFilter" after="CAS_FILTER" />
+        <!-- TODO remove filter once we upgrade open am -->
+        <sec:custom-filter ref="ajaxTimeoutRedirectFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
+    </sec:http>
+    <bean id="usernamePasswordAuthenticationFilter" class="be.inbo.zeevogels.filter.JsonAuthProcessingFilter">
+        <property name="authenticationManager" ref="org.springframework.security.authenticationManager"/>
+    </bean>
+
+    <bean id="openamAuthenticationProvider" class="be.milieuinfo.spring.security.openam.common.OpenAMAuthenticationProvider">
+     <constructor-arg ref="openamUserDetailsService" />
+     <property name="allowUsernamePassword" value="true" />
+     <property name="identityServices" ref="openAMIdentityServices"/>
+    </bean>
+
+
+    <sec:authentication-manager alias="authenticationManager">
+        <sec:authentication-provider ref="openamAuthenticationProvider" />
+    </sec:authentication-manager>
+
+ 
+    <bean id="openamAuthenticationFilter" class="be.milieuinfo.spring.security.openam.authentication.OpenAMAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="openAMUtils" ref="openamUtils" />
+    </bean>
+
+
+    <bean id="openamUtils" class="be.milieuinfo.spring.security.openam.common.OpenAMUtils">
+        <property name="ssoTokenManager" ref="ssoTokenManager" />
+    </bean>
+
+    <bean id="ssoTokenManager" class="be.milieuinfo.spring.security.openam.soap.OpenAMSoapSSOTokenManager">
+        <constructor-arg ref="openAMIdentityServices" />
+   </bean>
+
+    <jaxws:client id="identityServices" serviceClass="com.sun.identity.idsvcs.opensso.IdentityServicesImpl"
+                  address="${identityServices.baseurl}/identityservices/IdentityServices" />
+
+<!-- userdetailsCache times should be used as below in every ACD application. Altering is only allowed if an exception is granted by the enterprise architect-->
+
+    <bean id="identityCache" class="be.milieuinfo.spring.security.openam.common.EhCacheBasedIdentityCache">
+    	<constructor-arg>
+            <bean class="net.sf.ehcache.Cache" init-method="initialise" destroy-method="dispose">
+                <constructor-arg>
+                    <bean class="net.sf.ehcache.config.CacheConfiguration">
+                        <property name="name" value="identities" />
+                        <property name="maxElementsInMemory" value="50" />
+                        <property name="eternal" value="false" />
+                        <property name="overflowToDisk" value="false" />
+                        <property name="timeToLiveSeconds" value="900" />
+                        <property name="timeToIdleSeconds" value="300" />
+                    </bean>
+                </constructor-arg>
+            </bean>
+    	</constructor-arg>
+    </bean>
+
+    <alias name="openamUserDetailsService" alias="openAMIdentityServices"/>
+
+    <bean id="openamUserDetailsService" class="be.milieuinfo.spring.security.openam.soap.OpenAMSoapUserDetailsService">
+    	<constructor-arg ref="identityServices" />
+    	<constructor-arg ref="identityCache" />
+    </bean>
+
+    <bean id="openamLogoutFilter" class="be.milieuinfo.spring.security.openam.authentication.OpenAMSSOLogoutFilter">
+        <property name="openAMUtils" ref="openamUtils" />
+    </bean>
+
+    <bean id="openamProcessingFilterEntryPoint" class="be.milieuinfo.spring.security.openam.authentication.OpenAMAuthenticationEntryPoint">
+        <property name="loginUrl" value="login.jsp" />
+        <property name="crossDomain" value="true" />
+    </bean>
+
+    <bean id="authenticationExtractor" class="be.milieuinfo.spring.security.openam.remoting.common.OpenAMAuthenticationExtractor">
+        <property name="openAMIdentityServices" ref="openAMIdentityServices" />
+    </bean>
+
+    <bean id="securedSoapOutInterceptor" class="be.milieuinfo.spring.security.openam.remoting.soap.OpenAMSecuredSoapOutInterceptor">
+        <property name="authenticationExtractor" ref="authenticationExtractor" />
+    </bean>
+
+    <bean id="loggerListener" class="org.springframework.security.authentication.event.LoggerListener" />
+</beans>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+
+    <Resource name="jdbc/zeevogelsDB" auth="Container" type="javax.sql.DataSource"
+        maxActive="40" maxIdle="20" maxWait="1000" username="inbodemwsbusiness" password="Development@03"
+        driverClassName="net.sourceforge.jtds.jdbc.Driver" url="jdbc:jtds:sqlserver://localhost:1433/Inbodem"/>
+
+    <Environment name="machineName" type="java.lang.String" value="localhost"/>
+
+    <Environment name="environment" type="java.lang.String" value="ontwikkel"/>
+
+</Context>
