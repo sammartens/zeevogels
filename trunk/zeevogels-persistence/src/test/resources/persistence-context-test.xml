@@ -36,6 +36,7 @@
 
     <jdbc:embedded-database id="zeevogelsDataSource" type="H2">
         <jdbc:script location="db/create.sql"/>
+        <jdbc:script location="db/populate.sql"/>
         <jdbc:script location="db/populate-test.sql"/>
     </jdbc:embedded-database>
 </beans>
